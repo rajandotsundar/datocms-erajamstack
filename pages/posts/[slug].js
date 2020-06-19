@@ -14,6 +14,7 @@ import { CMS_NAME } from '../../lib/constants'
 import markdownToHtml from '../../lib/markdownToHtml'
 
 export default function Post({ post, morePosts, preview }) {
+  
   const router = useRouter()
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
@@ -52,17 +53,19 @@ export default function Post({ post, morePosts, preview }) {
 
 export async function getStaticProps({ params, preview }) {
   const data = await getPostAndMorePosts(params.slug, preview)
-  const content = await markdownToHtml(data?.post?.content || '')
-
+  const content = await markdownToHtml(data.post.content || '')
+  console.log(params.slug, ' slug ');
+  //console.log(data.post.content);
   return {
     props: {
+      morePosts: data?.morePosts,
       preview,
       post: {
         ...data?.post,
         content,
       },
-      morePosts: data?.morePosts,
     },
+    unstable_revalidate: 60
   }
 }
 
